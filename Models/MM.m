@@ -36,7 +36,7 @@ Reaction_rates = [1e3, 5e2, 5e0, 0e0];
 % Rate = Reaction_rate_Function(Reaction_rates,S);
 
 %% Initial molecular population
-Initial_Molecular_Population=[1e2, 5e1, 0, 0];
+Initial_Molecular_Population=[3e3, 3e3, 0, 0];
 
 %% Boundary condtion on molecular population of each species for open systems
 % In an open system, there will be species with unbounded population.

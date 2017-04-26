@@ -1,12 +1,15 @@
 function [D, State_Transition_Index_Matrix,SSA_propensity_matrix] = Dynamics_Builder(S, Stoichiometry, Reactants_stoichiometry)
-tic; global nstates number_reactions Reaction_rates
+tic; 
+global nstates number_reactions Reaction_rates
 %% Identifying the possible transitions from each state due to all reactions
+
 State_Transition_Index_Matrix = State_Transition_Matrix_Finder(S,Stoichiometry);
  
 %% Possible combination of interactions between species in all reactions
 %(parallel pooling is implemented and can be used when number of reeaction is large)
+
 [Combination, Combination_diag] = Combination_reaction_Finder(S,Reactants_stoichiometry);
- 
+
 %% Generating off-diagonal propensitites and index 
 % Reaction rates array (if not defined in the Input_data)
 Rate = Reaction_rate_Function(Reaction_rates);%,S);
@@ -29,7 +32,7 @@ for i = 1:number_reactions
      
     j = j + l;
 end
- 
+
 %% Generating diagonal propensitites and index to off diagonal propensities
 Reaction_propensity_index(j+1:j+nstates,:) = [1:nstates;1:nstates]';
 Reaction_propensity(j+1:j+nstates) = -dot(Combination_diag',Rate');

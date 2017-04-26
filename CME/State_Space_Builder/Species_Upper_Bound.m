@@ -31,7 +31,7 @@ if ~isempty(Conservation)
     if ~isempty(Closed_Species_index)
         Conservation_temp = Conservation(Closed_Species_index,:);
         Conservation_temp(Conservation==0)= nan;
-        UB(Closed_Species_index)=min(floor(Conservation_Sum./Conservation_temp)');
+        UB(Closed_Species_index)=min(floor(repmat(Conservation_Sum,number_species,1)./Conservation_temp)');
     end
 else
     %upper bound of all species is set from the boundary condition

@@ -10,8 +10,9 @@ A = 0:UB(dim_Cons_Cols+1);
 for i = dim_Cons_Cols+2:number_species
   A = combvec(A,0:UB(i));
 
-  %Removal of states that not satisfying conservation law
-  K = bsxfun(@minus,Conservation_Sum,A'*Conservation(dim_Cons_Cols+1:i,:));
+  %Removal of states that not satisfying conservation law (older/new versions of matlab)
+%   K = bsxfun(@minus,Conservation_Sum,A'*Conservation(dim_Cons_Cols+1:i,:));
+  K = Conservation_Sum - A'*Conservation(dim_Cons_Cols+1:i,:);
   A(:,any(K<0,2)) = [];
 end
 % Finding linearly dependent k species combination by solving linear problem

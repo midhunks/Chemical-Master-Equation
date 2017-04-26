@@ -7,7 +7,7 @@ tic; global number_species number_reactions Initial_Molecular_Population...
             Conservation_Sum dim_cons nstates minimal_CME
  
 [number_species,number_reactions] = size(Stoichiometry);
- 
+
 %% Setting conservation Law. 
 % For a closed system there are a number of conservartion laws exists. For
 % open system, there may be some but not neccessary. We identify the

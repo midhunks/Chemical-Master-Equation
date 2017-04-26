@@ -1,3 +1,10 @@
+%% Step 1: Add subdirectories to the search path
+if ispc, b='\'; else, b='/'; end % defining forward/bckward slashes
+addpath([pwd,b,'Models',b]);
+addpath([pwd,b,'CME',b]);
+addpath([pwd,b,'CME',b,'State_Space_Builder',b]);
+addpath([pwd,b,'CME',b,'Dynamics_Builder',b]);
+
 %% Clearing Variables
 tic; clc; clear all; close all; more off; 
 % profile off; profile viewer; 
