@@ -1,0 +1,28 @@
+%% Home folder
+global homefolder
+homefolder = uigetdir('','Choose Home Folder');
+% OR you can complete path if you are using the following line
+% homefolder = '/Chemical-Master-Equation'; 
+cd(homefolder);
+
+%% Step 1: Model Setup
+% Gnerate the Matlab model file from SBML (.xml) model file
+cd(homefolder);  cd('Models');
+
+% Run the CMEModel from Matlab (.m) model file
+[FileName,path] = uigetfile({'*.m','Model Files (*.m)';
+    '*.*',  'All Files (*.*)'}, ...
+    'Choose the model file');
+run(FileName)
+
+% Or simply use the following line
+% run('MM.m')
+
+%% %% Step 2: Generate State space of the CME
+cd(homefolder);     cd('State_Space_Builder');
+State_Space = State_Builder(Stoichiometry);
+
+%% %% Step 3: Generatethe transition matrix of the CME
+cd(homefolder);     cd('Dynamics_Builder');
+[Transition_Matrix, State_Transition_Index_Matrix,SSA_propensity_matrix]...
+        = Dynamics_Builder(State_Space, Stoichiometry, Reactants_stoichiometry);
