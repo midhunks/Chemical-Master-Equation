@@ -1,0 +1,65 @@
+% function [S] = State_Builder(Boundary_condition, Minimal_StateSpace)
+%% State space Builder
+%     This function generates the state space for the chemical master
+%     equation using stoichiometry of the system
+
+global number_species 
+global Initial_Molecular_Population Minimal_Initial_Molecular_Population
+global Stoichiometry Reactants_stoichiometry Moiety_Conservation 
+
+if Minimal_StateSpace == 1
+    Initial_Molecular_Population = Minimal_Initial_Molecular_Population;
+end
+%% Removing non-active species and correspinding relations
+[RowId, ColId] = find(Moiety_Conservation > 0);
+Zerospecies_Index = find(histc(RowId,unique(RowId)) == 1), ;
+Closed_Species_Index = find(sum(Moiety_Conservation,2) ~= 0);
+Open_Species_Index = setdiff(1:number_species,[Zerospecies_Index; Closed_Species_Index]);
+
+Closed_Moiety_Conservation = Moiety_Conservation(Closed_Species_Index,:);
+Closed_Initial_Molecular_Population = Initial_Molecular_Population(Closed_Species_Index);
+
+%% All possible combinations of species
+%     The following function identifies al possible states the system can reach
+%     by means of Moiety_Conservation and upper bound.
+
+S = Combination_Finder(Closed_Moiety_Conservation, Closed_Initial_Molecular_Population);
+
+% Concatinating Open species
+if ~isempty(Open_Species_Index)
+    if isempty(Boundary_condition)
+        warning('Open species exists. Define upper bound for open-species.')        
+        warning('Usage: Chnage the commented line of boundary condition in the model file with the following line')        
+        fprintf(strcat('Boundary_condition([',num2str(Open_Species_Index'),']) = ["Add upper bound of open species here as vector"];\n\n'))
+        error('Upper bound of open species is not defined')
+    end
+    Open_S = 0:Boundary_condition(Open_Species_Index(1));
+    for i=2:length(Open_Species_Index)
+        Open_S = combvec(Open_S,0:Boundary_condition(Open_Species_Index(i)));
+    end
+    S = combvec(S,Open_S);
+end
+S = S';
+
+global nstates
+nstates = size(S,1);
+
+% Reindexing back to original order as species arranged
+S(:,[Closed_Species_Index; Open_Species_Index ; Zerospecies_Index]) ...
+    = [S', repmat(Initial_Molecular_Population(Zerospecies_Index),nstates,1)];
+
+%% Error check for absence of species
+%     checking for zero column in S so that each species is present
+%     in atleast one state
+
+Zero_species = find(sum(S) == 0);
+if ~isempty(Zero_species)
+    display(Moiety_Conservation);
+    display(Initial_Molecular_Population);
+    warning('Not all species states found.')
+    warning('Check negative values in Conservation matrix');
+    warning('Check whether intial population has all necessary species');
+    error('Species %d are not present in state space\n',Zero_species)
+end
+
+end

@@ -1,27 +1,30 @@
 %% Home folder
-CME_Folder = uigetdir('','Choose CME Folder');
-% OR you can complete path if you are using the following line
-% CME_Folder = '/Chemical-Master-Equation'; 
+if ~exist('CME_Folder','var')
+    % Use one of the following two lines
+    CME_Folder = uigetdir('','Choose CME Folder');
+    % CME_Folder = '/Chemical-Master-Equation';  needs to give accurate path
+end
+
+% Update CME
 cd(CME_Folder);
+system('git pull https://github.com/midhunks/Chemical-Master-Equation.git');
 
 %% Step 1: Model Setup
-% Gnerate the Matlab model file from SBML (.xml) model file
+% Run the CMEModel from Matlab (.m) model file. Template files are
+% available in 'Models' folder.
 cd(CME_Folder);  cd('Models');
-
-% Run the CMEModel from Matlab (.m) model file
 [FileName,path] = uigetfile({'*.m','Model Files (*.m)';
-    '*.*',  'All Files (*.*)'}, ...
-    'Choose the model file');
+                    '*.*',  'All Files (*.*)'}, 'Choose the model file');
 run(FileName)
 
-% Or simply use the following line
+% Or simply use the following line using the name of the model file
 % run('MM.m')
 
 %% %% Step 2: Generate State space of the CME
-cd(CME_Folder);     cd('State_Space_Builder');
-State_Space = State_Builder(Stoichiometry);
+cd(CME_Folder);     cd('StateSpace_Builder');
+State_Space = StateSpace_Builder(CMEModel, BoundaryCondition, 0);
 
 %% %% Step 3: Generatethe transition matrix of the CME
 cd(CME_Folder);     cd('TransitionMatrix_Builder');
-[Transition_Matrix, State_Transition_Index_Matrix,SSA_propensity_matrix]...
-        = Dynamics_Builder(State_Space, Stoichiometry, Reactants_stoichiometry);
+[Transition_Matrix, State_Transition_Index_Matrix, SSA_propensity_matrix]...
+                            = TransitionMatrix_Builder(CMEModel,State_Space);
